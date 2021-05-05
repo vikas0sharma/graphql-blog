@@ -35,7 +35,7 @@ namespace Blog
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<IBlogContext, BlogContext>(options =>
-            options.UseSqlServer(Configuration.GetSection("Database:ConnectionString").Value));
+            options.UseNpgsql(Configuration.GetSection("Database:ConnectionString").Value));
             // GraphQL
             var s = services.BuildServiceProvider();
             var db = s.GetService<IBlogContext>();
@@ -55,6 +55,7 @@ namespace Blog
             {
                 services.AddScoped(type);
             }
+
             services.AddMvc(option => option.EnableEndpointRouting = false);
         }
 
@@ -66,11 +67,30 @@ namespace Blog
             {
                 IBlogContext dbContext = app.ApplicationServices.GetService<IBlogContext>();
                 dbContext.Database.Migrate();
+                dbContext.User.Add(new User
+                {
+                    Id = 1,
+                    Name = "Vikas Sharma",
+                    Email = "mailbox.viksharma@gmail.com",
+                    Website = "vik-sharma.medium.com"
+                });
+                ((DbContext)dbContext).SaveChanges();
+                dbContext.Post.Add(new Post
+                {
+                    Body = "This is my first Herokuapp Postgres Db app",
+                    Title = "GraphQL+ EF + Postgres",
+                    Id = 1,
+                    UserId = 1
+
+                });
+                ((DbContext)dbContext).SaveChanges();
             }
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseHttpsRedirection();
             // Graph QL
             app.UseGraphQLPlayground();
             //app.UseGraphQLGraphiQL();
