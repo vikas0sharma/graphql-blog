@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Blog
@@ -30,6 +31,10 @@ namespace Blog
                             logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
                             logging.AddDebug();
                             logging.AddConsole();
+                        })
+                        .ConfigureKestrel(serverOptions =>
+                        {
+                            serverOptions.Listen(IPAddress.Any, Convert.ToInt32(Environment.GetEnvironmentVariable("PORT")));
                         })
             .UseStartup<Startup>();
             });
