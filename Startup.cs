@@ -35,7 +35,7 @@ namespace Blog
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<IBlogContext, BlogContext>(options =>
-            options.UseNpgsql(Configuration.GetSection("Database:ConnectionString").Value));
+            options.UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTIONSTRING")));
             // GraphQL
             var s = services.BuildServiceProvider();
             var db = s.GetService<IBlogContext>();
@@ -90,7 +90,7 @@ namespace Blog
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             // Graph QL
             app.UseGraphQLPlayground();
             //app.UseGraphQLGraphiQL();
