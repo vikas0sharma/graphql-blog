@@ -16,9 +16,6 @@ jobs:
           heroku_app_name: "gql-api" #Must be unique in Heroku
           heroku_email: "mailbox.viksharma@gmail.com"
           usedocker: true
-          docker_build_args: |
-            ASPNETCORE_ENVIRONMENT
-            DB_CONNECTIONSTRING
         env:
           DB_CONNECTIONSTRING: ${{secrets.DB_CONNECTIONSTRING}}
           ASPNETCORE_ENVIRONMENT: prod
