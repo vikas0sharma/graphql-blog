@@ -20,11 +20,10 @@ namespace Blog.Controllers
     [ApiController]
     public class GraphQlController : Controller
     {
-        IDocumentExecuter executer;
+        private readonly IDocumentExecuter executer;
         private readonly IBlogContext context;
-        ISchema schema;
-        static DocumentWriter writer = new DocumentWriter(true);
-
+        private readonly ISchema schema;
+        
         public GraphQlController(ISchema schema, IDocumentExecuter executer, IBlogContext context)
         {
             this.schema = schema;
@@ -37,15 +36,8 @@ namespace Blog.Controllers
             [BindRequired, FromBody] PostBody body,
             CancellationToken cancellation)
         {
-            try
-            {
-                return await Execute(body.Query, body.OperationName, body.Variables, cancellation);
-            }
-            catch (Exception e)
-            {
 
-                throw;
-            }
+            return await Execute(body.Query, body.OperationName, body.Variables, cancellation);
         }
 
         public class PostBody
@@ -90,7 +82,6 @@ namespace Blog.Controllers
                 Data = executeAsync.Data,
                 Errors = executeAsync.Errors
             };
-            //await writer.WriteAsync(Response.Body, executeAsync, cancellation);
         }
 
         static JObject? ParseVariables(string? variables)

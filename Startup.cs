@@ -34,22 +34,17 @@ namespace Blog
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<IBlogContext, BlogContext>(options =>
+            services.AddDbContext<BlogContext>(options =>
             options.UseNpgsql(Configuration.GetSection("Database:ConnectionString").Value));
-            // GraphQL
-            var s = services.BuildServiceProvider();
-            var db = s.GetService<IBlogContext>();
-            
+            services.AddSingleton<IBlogContext, BlogContext>();
+            // GraphQL            
             GraphTypeTypeRegistry.Register<Post, PostGraph>();
             GraphTypeTypeRegistry.Register<User, UserGraph>();
-            EfGraphQLConventions.RegisterInContainer(services, (context) => {
-                return (context as GraphQLUserContext)?.Context;
-
-            }, model: (db as BlogContext).Model);
+            EfGraphQLConventions.RegisterInContainer(services, (context) => (context as GraphQLUserContext)?.Context);
             EfGraphQLConventions.RegisterConnectionTypesInContainer(services);
             services.AddSingleton<IDocumentExecuter, EfDocumentExecuter>();
             services.AddSingleton<ISchema, GraphQLSchema>();
-            //services.AddSingleton<GraphQLQuery>();
+
             // Import also all the other created Graphs
             foreach (Type type in GetGraphQlTypes())
             {
